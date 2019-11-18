@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe('User Endpoints', function () {
+describe('User Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -79,7 +79,9 @@ describe('User Endpoints', function () {
       return supertest(app)
         .post('/api/user')
         .send(userPasswordStartsSpaces)
-        .expect(400, { error: `Password must not start or end with empty spaces` })
+        .expect(400, {
+          error: `Password must not start or end with empty spaces`,
+        })
     })
 
     it(`responds 400 error when password ends with spaces`, () => {
@@ -91,7 +93,9 @@ describe('User Endpoints', function () {
       return supertest(app)
         .post('/api/user')
         .send(userPasswordEndsSpaces)
-        .expect(400, { error: `Password must not start or end with empty spaces` })
+        .expect(400, {
+          error: `Password must not start or end with empty spaces`,
+        })
     })
 
     it(`responds 400 error when password isn't complex enough`, () => {
@@ -103,7 +107,9 @@ describe('User Endpoints', function () {
       return supertest(app)
         .post('/api/user')
         .send(userPasswordNotComplex)
-        .expect(400, { error: `Password must contain one upper case, lower case, number and special character` })
+        .expect(400, {
+          error: `Password must contain one upper case, lower case, number and special character`,
+        })
     })
 
     it(`responds 400 'User name already taken' when username isn't unique`, () => {
@@ -172,18 +178,41 @@ describe('User Endpoints', function () {
           name: 'test name',
         }
         const expectedList = {
-          name: 'French',
+          name: 'Russian',
           total_score: 0,
           words: [
-            { original: 'entraine toi', translation: 'practice' },
-            { original: 'bonjour', translation: 'hello' },
-            { original: 'maison', translation: 'house' },
-            { original: 'développeur', translation: 'developer' },
-            { original: 'traduire', translation: 'translate' },
-            { original: 'incroyable', translation: 'amazing' },
-            { original: 'chien', translation: 'dog' },
-            { original: 'chat', translation: 'cat' },
-          ]
+            {
+              original: 'Доброе утро (Dobraye utro)',
+              translation: 'Good morning',
+            },
+            {
+              original: 'Вы говорите по-английски? (Vi govorite po Angliski?)',
+              translation: 'Do you speak English?',
+            },
+            {
+              original: 'Как Вы поживаете? (kak tvoi dela?)',
+              translation: 'How are you?',
+            },
+            {
+              original: 'Я не понимаю (Ya ne ponimayu)',
+              translation: 'I do not understand',
+            },
+            { original: 'Спасибо (Spasiba)', translation: 'Thank you' },
+            {
+              original: 'Пожалуйста (Pazhalusta)',
+              translation: 'You are welcome',
+            },
+            { original: 'До свидания (Do svidaniya)', translation: 'Goodbye' },
+            {
+              original: 'Добрый вечер (Dobriy vecher)',
+              translation: 'Good evening',
+            },
+            {
+              original: 'Извините, где туалет? (Izvinite, gde tualet?)',
+              translation: 'Excuse me, where’s the toilet?',
+            },
+            { original: 'Привет (Privet)', translation: 'Hi' },
+          ],
         }
         return supertest(app)
           .post('/api/user')
@@ -192,19 +221,21 @@ describe('User Endpoints', function () {
             /*
             get languages and words for user that were inserted to db
             */
-            db.from('language').select(
-              'language.*',
-              db.raw(
-                `COALESCE(
+            db
+              .from('language')
+              .select(
+                'language.*',
+                db.raw(
+                  `COALESCE(
                   json_agg(DISTINCT word)
                   filter(WHERE word.id IS NOT NULL),
                   '[]'
                 ) AS words`
-              ),
-            )
-            .leftJoin('word', 'word.language_id', 'language.id')
-            .groupBy('language.id')
-            .where({ user_id: res.body.id })
+                )
+              )
+              .leftJoin('word', 'word.language_id', 'language.id')
+              .groupBy('language.id')
+              .where({ user_id: res.body.id })
           )
           .then(dbLists => {
             expect(dbLists).to.have.length(1)
@@ -213,17 +244,11 @@ describe('User Endpoints', function () {
             expect(dbLists[0].total_score).to.eql(0)
 
             const dbWords = dbLists[0].words
-            expect(dbWords).to.have.length(
-              expectedList.words.length
-            )
+            expect(dbWords).to.have.length(expectedList.words.length)
 
             expectedList.words.forEach((expectedWord, w) => {
-              expect(dbWords[w].original).to.eql(
-                expectedWord.original
-              )
-              expect(dbWords[w].translation).to.eql(
-                expectedWord.translation
-              )
+              expect(dbWords[w].original).to.eql(expectedWord.original)
+              expect(dbWords[w].translation).to.eql(expectedWord.translation)
               expect(dbWords[w].memory_value).to.eql(1)
             })
           })

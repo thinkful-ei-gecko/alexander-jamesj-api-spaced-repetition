@@ -17,18 +17,20 @@ VALUES
 
 INSERT INTO "language" ("id", "name", "user_id")
 VALUES
-  (1, 'French', 1);
+  (1, 'Russian', 1);
 
 INSERT INTO "word" ("id", "language_id", "original", "translation", "next")
 VALUES
-  (1, 1, 'entraine toi', 'practice', 2),
-  (2, 1, 'bonjour', 'hello', 3),
-  (3, 1, 'maison', 'house', 4),
-  (4, 1, 'développeur', 'developer', 5),
-  (5, 1, 'traduire', 'translate', 6),
-  (6, 1, 'incroyable', 'amazing', 7),
-  (7, 1, 'chien', 'dog', 8),
-  (8, 1, 'chat', 'cat', null);
+  (1, 1, 'Доброе утро (Dobraye utro)', 'Good morning', 2),
+  (2, 1, 'Вы говорите по-английски? (Vi govorite po Angliski?)', 'Do you speak English?', 3),
+  (3, 1, 'Как Вы поживаете? (kak tvoi dela?)', 'How are you?', 4),
+  (4, 1, 'Я не понимаю (Ya ne ponimayu)', 'I do not understand', 5),
+  (5, 1, 'Спасибо (Spasiba)', 'Thank you', 6),
+  (6, 1, 'Пожалуйста (Pazhalusta)', 'You are welcome', 7),
+  (7, 1, 'До свидания (Do svidaniya)', 'Goodbye', 8),
+  (8, 1, 'Добрый вечер (Dobriy vecher)', 'Good evening', 9),
+  (9, 1, 'Извините, где туалет? (Izvinite, gde tualet?)', 'Excuse me, where’s the toilet?', 10),
+  (10, 1, 'Привет (Privet)', 'Hi', null);
 
 UPDATE "language" SET head = 1 WHERE id = 1;
 

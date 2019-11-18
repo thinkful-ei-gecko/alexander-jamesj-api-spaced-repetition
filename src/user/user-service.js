@@ -45,9 +45,7 @@ const UserService = {
     return db.transaction(async trx => {
       const [languageId] = await trx
         .into('language')
-        .insert([
-          { name: 'French', user_id },
-        ], ['id'])
+        .insert([{ name: 'Russian', user_id }], ['id'])
 
       // when inserting words,
       // we need to know the current sequence number
@@ -58,29 +56,35 @@ const UserService = {
         .first()
 
       const languageWords = [
-        ['entraine toi', 'practice', 2],
-        ['bonjour', 'hello', 3],
-        ['maison', 'house', 4],
-        ['développeur', 'developer', 5],
-        ['traduire', 'translate', 6],
-        ['incroyable', 'amazing', 7],
-        ['chien', 'dog', 8],
-        ['chat', 'cat', null],
+        ['Доброе утро (Dobraye utro)', 'Good morning', 2],
+        [
+          'Вы говорите по-английски? (Vi govorite po Angliski?)',
+          'Do you speak English?',
+          3,
+        ],
+        ['Как Вы поживаете? (kak tvoi dela?)', 'How are you?', 4],
+        ['Я не понимаю (Ya ne ponimayu)', 'I do not understand', 5],
+        ['Спасибо (Spasiba)', 'Thank you', 6],
+        ['Пожалуйста (Pazhalusta)', 'You are welcome', 7],
+        ['До свидания (Do svidaniya)', 'Goodbye', 8],
+        ['Добрый вечер (Dobriy vecher)', 'Good evening', 9],
+        [
+          'Извините, где туалет? (Izvinite, gde tualet?)',
+          'Excuse me, where’s the toilet?',
+          10,
+        ],
+        ['Привет (Privet)', 'Hi', null],
       ]
 
-      const [languageHeadId] = await trx
-        .into('word')
-        .insert(
-          languageWords.map(([original, translation, nextInc]) => ({
-            language_id: languageId.id,
-            original,
-            translation,
-            next: nextInc
-              ? Number(seq.last_value) + nextInc
-              : null
-          })),
-          ['id']
-        )
+      const [languageHeadId] = await trx.into('word').insert(
+        languageWords.map(([original, translation, nextInc]) => ({
+          language_id: languageId.id,
+          original,
+          translation,
+          next: nextInc ? Number(seq.last_value) + nextInc : null,
+        })),
+        ['id']
+      )
 
       await trx('language')
         .where('id', languageId.id)
