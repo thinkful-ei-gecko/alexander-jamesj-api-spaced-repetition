@@ -7,7 +7,7 @@ const LanguageService = {
         'language.name',
         'language.user_id',
         'language.head',
-        'language.total_score',
+        'language.total_score'
       )
       .where('language.user_id', user_id)
       .first()
@@ -24,7 +24,7 @@ const LanguageService = {
         'next',
         'memory_value',
         'correct_count',
-        'incorrect_count',
+        'incorrect_count'
       )
       .where({ language_id })
   },
@@ -37,10 +37,99 @@ const LanguageService = {
         'language.total_score AS totalScore',
         'word.correct_count AS wordCorrectCount',
         'word.incorrect_count AS wordIncorrectCount'
-        )
-      .where('language.id', '=', language_id )
+      )
+      .where('language.id', '=', language_id)
       .first()
-  }
+  },
+
+  getFullNextWord(db, language_id) {
+    return db('language')
+      .join('word', 'language.head', '=', 'word.id')
+      .select('*')
+      .where('language.id', '=', language_id)
+      .first()
+  },
+
+  updateLanguageWhenCorrect(db, id, result) {
+    return db('language')
+      .update({ head: result.next })
+      .increment('total_score', 1)
+      .where({ id })
+  },
+
+  updateLanguageWhenIncorrect(db, id, result) {
+    return db('language')
+      .update({ head: result.next })
+      .where({ id })
+  },
+
+  updateWord(db, id, data) {
+    const {
+      original,
+      translation,
+      memory_value,
+      correct_count,
+      incorrect_count,
+      next,
+    } = data
+    return db('word')
+      .update({
+        original,
+        translation,
+        memory_value,
+        correct_count,
+        incorrect_count,
+        next,
+      })
+      .where({ id })
+  },
+
+  processGuess(wordList, guess) {
+    // given a list of questions
+    // take the first question
+    const nextQ = wordList.head.value
+    let isCorrect
+    // shift the list to next question
+    wordList.head = wordList.head.next
+    // if the answer was correct
+    if (nextQ.translation === guess) {
+      // double the value of memory
+      nextQ.memory_value = nextQ.memory_value * 2
+      nextQ.correct_count++
+    } else {
+      // reset memory value to 1
+      nextQ.memory_value = 1
+      nextQ.incorrect_count++
+    }
+    // Move the question back amount equal to new memory value
+    wordList.insertAtDepth(nextQ, nextQ.memory_value)
+
+    // ensure actual db next values are correct according to list
+    let tempNode = wordList.head
+    while (tempNode.next !== null) {
+      tempNode.value.next = tempNode.next.value.id
+      tempNode = tempNode.next
+    }
+    tempNode.value.next = null
+    return {
+      ...wordList.head.value,
+      prevAnswer: nextQ.translation,
+      isCorrect: nextQ.translation === guess,
+    }
+  },
+
+  async updateWordsFromList(db, wordList) {
+    if (wordList.head === null) {
+      return
+    }
+
+    currNode = wordList.head
+    while (currNode.next !== null) {
+      let wordData = { ...currNode.value }
+      await LanguageService.updateWord(db, currNode.value.id, wordData)
+      currNode = currNode.next
+    }
+  },
 }
 
 module.exports = LanguageService
