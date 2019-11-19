@@ -65,6 +65,14 @@ languageRouter.post('/guess', express.json(), async (req, res, next) => {
     req.language.id
   )
   const userWordList = new LinkedList()
+  const currentUserData = await LanguageService.getUsersLanguage(req.app.get('db'), req.user.id)
+  
+  let startID = currentUserData.head
+  while (startID !== null) {
+    let wordToAdd = words.find(word => word.id === startID)
+    await userWordList.insertLast(wordToAdd)
+    startID = wordToAdd.next
+  }
   await words.forEach(word => userWordList.insertLast(word))
   const result = await LanguageService.processGuess(userWordList, guess)
   let response

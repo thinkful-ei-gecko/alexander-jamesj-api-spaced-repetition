@@ -27,6 +27,7 @@ const LanguageService = {
         'incorrect_count'
       )
       .where({ language_id })
+      .orderBy('id', 'ASC')
   },
 
   getNextWord(db, language_id) {
@@ -52,14 +53,14 @@ const LanguageService = {
 
   updateLanguageWhenCorrect(db, id, result) {
     return db('language')
-      .update({ head: result.next })
+      .update({ head: result.id })
       .increment('total_score', 1)
       .where({ id })
   },
 
   updateLanguageWhenIncorrect(db, id, result) {
     return db('language')
-      .update({ head: result.next })
+      .update({ head: result.id })
       .where({ id })
   },
 
