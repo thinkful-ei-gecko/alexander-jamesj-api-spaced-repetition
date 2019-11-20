@@ -89,12 +89,6 @@ const LanguageService = {
         next,
       })
       .where({ id })
-      .then(() =>
-        db('word')
-          .select('*')
-          .where({ id })
-          .first()
-      )
   },
 
   processGuess(wordList, guess) {
@@ -144,11 +138,17 @@ const LanguageService = {
     }
 
     let currNode = wordList.head
+    const promises = []
     while (currNode.next !== null) {
       let wordData = currNode.value
-      LanguageService.updateWord(db, currNode.value.id, wordData)
+      promises.push(LanguageService.updateWord(db, currNode.value.id, wordData))
       currNode = currNode.next
     }
+    Promise.all(promises)
+      .then()
+      .catch(e => {
+        throw new Error(e)
+      })
   },
 }
 
