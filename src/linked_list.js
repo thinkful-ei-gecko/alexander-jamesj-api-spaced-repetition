@@ -19,7 +19,6 @@ class LinkedList {
     } else {
       let tempNode = this.head
       while (tempNode.next !== null) {
-        // console.log(tempNode.next)
         tempNode = tempNode.next
       }
       tempNode.next = new _Node(value, null)
@@ -33,12 +32,11 @@ class LinkedList {
       let counter = depth
       let prevNode = null
       let currNode = this.head
-      while (currNode && counter !== 0) {
+      while (currNode && counter > 0) {
         prevNode = currNode
         currNode = currNode.next
         counter--
       }
-
       if (!currNode) {
         this.insertLast(value)
       } else {

@@ -53,15 +53,21 @@ const LanguageService = {
 
   updateLanguageWhenCorrect(db, id, result) {
     return db('language')
-      .update({ head: result.id })
+      .update({ head: result.nextWordID })
       .increment('total_score', 1)
       .where({ id })
   },
 
   updateLanguageWhenIncorrect(db, id, result) {
     return db('language')
-      .update({ head: result.id })
+      .update({ head: result.nextWordID })
       .where({ id })
+      .then(() => {
+        db('language')
+          .select('*')
+          .where({ id })
+          .first()
+      })
   },
 
   updateWord(db, id, data) {
@@ -83,13 +89,19 @@ const LanguageService = {
         next,
       })
       .where({ id })
+      .then(() =>
+        db('word')
+          .select('*')
+          .where({ id })
+          .first()
+      )
   },
 
   processGuess(wordList, guess) {
     // given a list of questions
     // take the first question
     const nextQ = wordList.head.value
-    let isCorrect
+
     // shift the list to next question
     wordList.head = wordList.head.next
     // if the answer was correct
@@ -112,22 +124,29 @@ const LanguageService = {
       tempNode = tempNode.next
     }
     tempNode.value.next = null
+    // should be next word's original, correct and incorrect
+    // plus the just guessed's translation and a bool
+    // for if guess was right
+
     return {
-      ...wordList.head.value,
-      prevAnswer: nextQ.translation,
+      nextWord: wordList.head.value.original,
+      wordCorrectCount: wordList.head.value.correct_count,
+      wordIncorrectCount: wordList.head.value.incorrect_count,
+      answer: nextQ.translation,
       isCorrect: nextQ.translation === guess,
+      nextWordID: wordList.head.value.id,
     }
   },
 
-  async updateWordsFromList(db, wordList) {
+  updateWordsFromList(db, wordList) {
     if (wordList.head === null) {
       return
     }
 
-    currNode = wordList.head
+    let currNode = wordList.head
     while (currNode.next !== null) {
-      let wordData = { ...currNode.value }
-      await LanguageService.updateWord(db, currNode.value.id, wordData)
+      let wordData = currNode.value
+      LanguageService.updateWord(db, currNode.value.id, wordData)
       currNode = currNode.next
     }
   },

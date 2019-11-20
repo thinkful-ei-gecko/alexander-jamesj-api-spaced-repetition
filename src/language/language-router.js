@@ -60,6 +60,7 @@ languageRouter.post('/guess', express.json(), async (req, res, next) => {
     return res.status(400).json({ error: "Missing 'guess' in request body" })
   }
 
+try {
   const words = await LanguageService.getLanguageWords(
     req.app.get('db'),
     req.language.id
@@ -73,48 +74,27 @@ languageRouter.post('/guess', express.json(), async (req, res, next) => {
     await userWordList.insertLast(wordToAdd)
     startID = wordToAdd.next
   }
-  await words.forEach(word => userWordList.insertLast(word))
-  const result = await LanguageService.processGuess(userWordList, guess)
-  let response
-  let userData
   
-  // correct answers produce values greater than 1 always,
-  // assume if the value is not 1, it was right
+  const result = await LanguageService.processGuess(userWordList, guess)
+  // update word.next based on userWordList order
+  await LanguageService.updateWordsFromList(req.app.get('db'), userWordList)
+
   if (result.isCorrect) {
-    // update language.total_score to be +1
-    // update language.head to be result.next
-    
     await LanguageService.updateLanguageWhenCorrect(req.app.get('db'), req.language.id, result)
-    // update word.next based on userWordList order
-    await LanguageService.updateWordsFromList(req.app.get('db'), userWordList)
-    userData = await LanguageService.getUsersLanguage(req.app.get('db'), req.user.id)
-
-    response = {
-      nextWord: result.original,
-      totalScore: userData.total_score,
-      wordCorrectCount: result.correct_count,
-      wordIncorrectCount: result.incorrect_count,
-      answer: result.prevAnswer,
-      isCorrect: true
-    }
-
-    return res.status(200).json(response) 
   } else {
     await LanguageService.updateLanguageWhenIncorrect(req.app.get('db'), req.language.id, result)
-    await LanguageService.updateWordsFromList(req.app.get('db'), userWordList)
-    userData = await LanguageService.getUsersLanguage(req.app.get('db'), req.user.id)
-    response = {
-      nextWord: result.original,
-      totalScore: userData.total_score,
-      wordCorrectCount: result.correct_count,
-      wordIncorrectCount: result.incorrect_count,
-      answer: result.prevAnswer,
-      isCorrect: false
-    }
-    return res.status(200).json(response) 
   }
-
-  // return res.status(200).json({ userWordList })
+  
+  const userData = await LanguageService.getUsersLanguage(req.app.get('db'), req.user.id)
+  delete result.nextWordID
+  res.json({
+    ...result,
+    totalScore: userData.total_score,
+  })
+  next()
+} catch (error) {
+  next(error)
+}
 
 })
 
