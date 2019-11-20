@@ -29,7 +29,7 @@ VALUES
   (6, 1, 'Пожалуйста (Pazhalusta)', 'You are welcome', 7),
   (7, 1, 'До свидания (Do svidaniya)', 'Goodbye', 8),
   (8, 1, 'Добрый вечер (Dobriy vecher)', 'Good evening', 9),
-  (9, 1, 'Извините, где туалет? (Izvinite, gde tualet?)', 'Excuse me, where’s the toilet?', 10),
+  (9, 1, 'Извините, где туалет? (Izvinite, gde tualet?)', 'Excuse me, where is the toilet?', 10),
   (10, 1, 'Привет (Privet)', 'Hi', null);
 
 UPDATE "language" SET head = 1 WHERE id = 1;

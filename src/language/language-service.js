@@ -118,6 +118,7 @@ const LanguageService = {
       tempNode = tempNode.next
     }
     tempNode.value.next = null
+
     // should be next word's original, correct and incorrect
     // plus the just guessed's translation and a bool
     // for if guess was right
@@ -144,6 +145,7 @@ const LanguageService = {
       promises.push(LanguageService.updateWord(db, currNode.value.id, wordData))
       currNode = currNode.next
     }
+    promises.push(LanguageService.updateWord(db, currNode.value.id, {...currNode.value, next: null}))
     Promise.all(promises)
       .then()
       .catch(e => {
