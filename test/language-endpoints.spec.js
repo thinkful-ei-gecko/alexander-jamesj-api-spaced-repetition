@@ -1,7 +1,7 @@
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe('Language Endpoints', function () {
+describe('Language Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -27,12 +27,12 @@ describe('Language Endpoints', function () {
       {
         title: `GET /api/language/head`,
         path: `/api/language/head`,
-        method: supertest(app).get
+        method: supertest(app).get,
       },
       {
         title: `POST /api/language/guess`,
         path: `/api/language/guess`,
-        method: supertest(app).post
+        method: supertest(app).post,
       },
     ]
 
@@ -43,12 +43,13 @@ describe('Language Endpoints', function () {
             db,
             testUsers,
             testLanguages,
-            testWords,
+            testWords
           )
         })
 
         it(`responds with 404 if user doesn't have any languages`, () => {
-          return endpoint.method(endpoint.path)
+          return endpoint
+            .method(endpoint.path)
             .set('Authorization', helpers.makeAuthHeader(testUsers[1]))
             .send({})
             .expect(404, {
@@ -75,7 +76,7 @@ describe('Language Endpoints', function () {
         db,
         testUsers,
         testLanguages,
-        testWords,
+        testWords
       )
     })
 
@@ -89,10 +90,12 @@ describe('Language Endpoints', function () {
 
           expect(res.body.language).to.have.property('id', usersLanguage.id)
           expect(res.body.language).to.have.property('name', usersLanguage.name)
-          expect(res.body.language).to.have.property('user_id', usersLanguage.user_id)
+          expect(res.body.language).to.have.property(
+            'user_id',
+            usersLanguage.user_id
+          )
           expect(res.body.language).to.have.property('total_score', 0)
-          expect(res.body.language).to.have.property('head')
-            .which.is.not.null
+          expect(res.body.language).to.have.property('head').which.is.not.null
 
           usersWords.forEach((usersWord, idx) => {
             const word = res.body.words[idx]
@@ -119,7 +122,7 @@ describe('Language Endpoints', function () {
         db,
         testUsers,
         testLanguages,
-        testWords,
+        testWords
       )
     })
 
@@ -151,7 +154,7 @@ describe('Language Endpoints', function () {
         db,
         testUsers,
         testLanguages,
-        testWords,
+        testWords
       )
     })
 
@@ -186,7 +189,7 @@ describe('Language Endpoints', function () {
             wordCorrectCount: 0,
             wordIncorrectCount: 0,
             answer: testLanguagesWords[0].translation,
-            isCorrect: false
+            isCorrect: false,
           })
       })
 
@@ -206,7 +209,7 @@ describe('Language Endpoints', function () {
             wordCorrectCount: 0,
             wordIncorrectCount: 1,
             answer: testLanguagesWords[1].translation,
-            isCorrect: false
+            isCorrect: false,
           })
       })
     })
@@ -231,7 +234,7 @@ describe('Language Endpoints', function () {
             wordCorrectCount: 0,
             wordIncorrectCount: 0,
             answer: testLanguagesWords[0].translation,
-            isCorrect: true
+            isCorrect: true,
           })
       })
 
@@ -257,7 +260,7 @@ describe('Language Endpoints', function () {
             wordCorrectCount: 0,
             wordIncorrectCount: 0,
             answer: testLanguagesWords[1].translation,
-            isCorrect: true
+            isCorrect: true,
           })
 
         correctPostBody = {
@@ -273,7 +276,82 @@ describe('Language Endpoints', function () {
             wordCorrectCount: 1,
             wordIncorrectCount: 0,
             answer: testLanguagesWords[2].translation,
-            isCorrect: true
+            isCorrect: true,
+          })
+      })
+
+      it(`moves through all words and maintains expected memory_value, next values`, async () => {
+        let correctPostBody = {
+          guess: testLanguagesWords[0].translation,
+        }
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+
+        correctPostBody = {
+          guess: testLanguagesWords[1].translation,
+        }
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+
+        correctPostBody = {
+          guess: testLanguagesWords[2].translation,
+        }
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+
+        correctPostBody = {
+          guess: testLanguagesWords[0].translation,
+        }
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+
+        correctPostBody = {
+          guess: testLanguagesWords[1].translation,
+        }
+
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+
+        correctPostBody = {
+          guess: testLanguagesWords[2].translation,
+        }
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+
+        correctPostBody = {
+          guess: testLanguagesWords[3].translation,
+        }
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+
+        correctPostBody = {
+          guess: testLanguagesWords[4].translation,
+        }
+        await supertest(app)
+          .post(`/api/language/guess`)
+          .set('Authorization', helpers.makeAuthHeader(testUser))
+          .send(correctPostBody)
+          .expect({
+            nextWord: testLanguagesWords[0].original,
+            totalScore: 8,
+            wordCorrectCount: 2,
+            wordIncorrectCount: 0,
+            answer: testLanguagesWords[4].translation,
+            isCorrect: true,
           })
       })
     })
