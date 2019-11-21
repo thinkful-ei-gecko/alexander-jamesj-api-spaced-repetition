@@ -2,6 +2,7 @@ const express = require('express')
 const LanguageService = require('./language-service')
 const { requireAuth } = require('../middleware/jwt-auth')
 const LinkedList = require('../linked_list')
+const xss = require('xss')
 
 const languageRouter = express.Router()
 
@@ -55,7 +56,9 @@ languageRouter.get('/head', async (req, res, next) => {
 })
 
 languageRouter.post('/guess', express.json(), async (req, res, next) => {
-  const { guess } = req.body
+  let { guess } = req.body
+  guess = xss(guess)
+
   if (!guess) {
     return res.status(400).json({ error: "Missing 'guess' in request body" })
   }

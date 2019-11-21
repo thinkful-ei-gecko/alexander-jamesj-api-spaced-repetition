@@ -1,4 +1,5 @@
 const express = require('express')
+const xss = require('xss')
 const AuthService = require('./auth-service')
 const { requireAuth } = require('../middleware/jwt-auth')
 
@@ -9,12 +10,12 @@ authRouter
   .route('/token')
   .post(jsonBodyParser, async (req, res, next) => {
     const { username, password } = req.body
-    const loginUser = { username, password }
+    const loginUser = { username: xss(username), password: xss(password) }
 
     for (const [key, value] of Object.entries(loginUser))
       if (value == null)
         return res.status(400).json({
-          error: `Missing '${key}' in request body`
+          error: `Missing '${key}' in request body`,
         })
 
     try {

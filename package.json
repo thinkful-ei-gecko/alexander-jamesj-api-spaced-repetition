@@ -1,5 +1,5 @@
 {
-  "name": "express-boilerplate",
+  "name": "syntrack-api",
   "version": "0.0.1",
   "description": "",
   "main": "src/server.js",
@@ -12,7 +12,7 @@
     "deploy": "git push heroku master"
   },
   "keywords": [],
-  "author": "Tom `tomatao` HT <tomht@thinkful.com>",
+  "author": "James Jenkins <me@jamesjenkins.dev>",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,7 +24,8 @@
     "knex": "^0.16.3",
     "morgan": "^1.9.1",
     "pg": "^7.8.2",
-    "postgrator-cli": "^3.3.0"
+    "postgrator-cli": "^3.3.0",
+    "xss": "^1.0.6"
   },
   "devDependencies": {
     "chai": "^4.2.0",

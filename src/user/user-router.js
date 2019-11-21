@@ -1,4 +1,5 @@
 const express = require('express')
+const xss = require('xss')
 const path = require('path')
 const UserService = require('./user-service')
 
@@ -7,7 +8,10 @@ const jsonBodyParser = express.json()
 
 userRouter
   .post('/', jsonBodyParser, async (req, res, next) => {
-    const { password, username, name } = req.body
+    let { password, username, name } = req.body
+    password = xss(password)
+    username = xss(username)
+    name = xss(name)
 
     for (const field of ['name', 'username', 'password'])
       if (!req.body[field])
