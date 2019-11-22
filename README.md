@@ -1,5 +1,33 @@
 # Spaced repetition API!
 
+## Description
+This API supports Syntrack (https://alexander-jamesj-spaced-repetition.alexanderfukui.now.sh) - a spaced repetition application aimed at helping users learn new languages via reviewing words and phrases. The seed data currently sets up a database with Russian, but can be adapted to other languages with minimal effort
+
+## Endpoints
+
+### Public Routes
+- POST /api/user/
+   - Given a username, name and password, will validate information and create a new user in the database along with affiliated language and word table data
+- POST /api/auth/token
+   - Given valid existing username and password, responds with a JWT token for authenticating user to use private endpoints
+
+### Private Routes
+- PUT /api/auth/
+   - When authenticated as a user, allows for replacing existing JWTs with new ones
+- GET /api/language/
+   - When authenticated as a user and with valid language id, retrieves associated word data from the word table for a user
+- GET /api/language/head
+   - When authenticated as a user with valid language id, retrieves the current word data matching the value of language.head
+   - This id represensts the word to present next to a user for the purposes of the client app
+- POST /api/language/guess
+   - When authenticated as a user, accepts a guess parameter in the request body
+   - The guess will be compared against the current word corresponding to the language head value and, depending on whether it matches the word's translation, will update the word as well as other words to modify the head and the sequencing of all other words by way of a memory_value in the word table
+
+## Technologies
+- NodeJS
+- Express
+- PostgreSQL
+
 ## Local dev setup
 
 If using user `dunder-mifflin`:
