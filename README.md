@@ -1,3 +1,7 @@
+## Authors
+- Thomas Hudspith-Tatham (@tomatau)
+- James Jenkins (@jamesjenkinsjr)
+
 Client:  
    - Live: https://alexander-jamesj-spaced-repetition.alexanderfukui.now.sh
    - Code: https://github.com/thinkful-ei-gecko/alexander-jamesj-spaced-repetition
