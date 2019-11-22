@@ -1,7 +1,13 @@
-# Spaced repetition API!
+Client:  
+   - Live: https://alexander-jamesj-spaced-repetition.alexanderfukui.now.sh
+   - Code: https://github.com/thinkful-ei-gecko/alexander-jamesj-spaced-repetition
+
+Server: 
+   - Code: https://syntrack-api.herokuapp.com/api
+
 
 ## Description
-This API supports Syntrack (https://alexander-jamesj-spaced-repetition.alexanderfukui.now.sh) - a spaced repetition application aimed at helping users learn new languages via reviewing words and phrases. The seed data currently sets up a database with Russian, but can be adapted to other languages with minimal effort
+This API supports Syntrack - a spaced repetition application aimed at helping users learn new languages via reviewing words and phrases. The seed data currently sets up a database with Russian, but can be adapted to other languages with minimal effort
 
 ## Endpoints
 
