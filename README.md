@@ -1,6 +1,7 @@
-## Authors
+## Syntrack Authors
 - Thomas Hudspith-Tatham (@tomatau)
 - James Jenkins (@jamesjenkinsjr)
+- Alexander Fukui (@psychicbologna)
 
 Client:  
    - Live: https://alexander-jamesj-spaced-repetition.alexanderfukui.now.sh
