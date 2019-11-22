@@ -110,8 +110,9 @@ function makeAuthHeader(user, secret = process.env.JWT_SECRET) {
  */
 function cleanTables(db) {
   return db.transaction(trx =>
-    trx.raw(
-      `TRUNCATE
+    trx
+      .raw(
+        `TRUNCATE
         "word",
         "language",
         "user"`
@@ -138,15 +139,14 @@ function cleanTables(db) {
 function seedUsers(db, users) {
   const preppedUsers = users.map(user => ({
     ...user,
-    password: bcrypt.hashSync(user.password, 1)
+    password: bcrypt.hashSync(user.password, 1),
   }))
   return db.transaction(async trx => {
     await trx.into('user').insert(preppedUsers)
 
-    await trx.raw(
-      `SELECT setval('user_id_seq', ?)`,
-      [users[users.length - 1].id],
-    )
+    await trx.raw(`SELECT setval('user_id_seq', ?)`, [
+      users[users.length - 1].id,
+    ])
   })
 }
 
@@ -165,23 +165,17 @@ async function seedUsersLanguagesWords(db, users, languages, words) {
     await trx.into('language').insert(languages)
     await trx.into('word').insert(words)
 
-    const languageHeadWord = words.find(
-      w => w.language_id === languages[0].id
-    )
+    const languageHeadWord = words.find(w => w.language_id === languages[0].id)
 
     await trx('language')
       .update({ head: languageHeadWord.id })
       .where('id', languages[0].id)
 
     await Promise.all([
-      trx.raw(
-        `SELECT setval('language_id_seq', ?)`,
-        [languages[languages.length - 1].id],
-      ),
-      trx.raw(
-        `SELECT setval('word_id_seq', ?)`,
-        [words[words.length - 1].id],
-      ),
+      trx.raw(`SELECT setval('language_id_seq', ?)`, [
+        languages[languages.length - 1].id,
+      ]),
+      trx.raw(`SELECT setval('word_id_seq', ?)`, [words[words.length - 1].id]),
     ])
   })
 }

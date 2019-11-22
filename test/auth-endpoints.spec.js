@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 
-describe('Auth Endpoints', function () {
+describe('Auth Endpoints', function() {
   let db
 
   const testUsers = helpers.makeUsersArray()
@@ -23,12 +23,7 @@ describe('Auth Endpoints', function () {
    * @description Get token for login
    **/
   describe(`POST /api/auth/token`, () => {
-    beforeEach('insert users', () =>
-      helpers.seedUsers(
-        db,
-        testUsers,
-      )
-    )
+    beforeEach('insert users', () => helpers.seedUsers(db, testUsers))
 
     const requiredFields = ['username', 'password']
 
@@ -59,7 +54,10 @@ describe('Auth Endpoints', function () {
     })
 
     it(`responds 400 'invalid username or password' when bad password`, () => {
-      const userInvalidPass = { username: testUser.username, password: 'incorrect' }
+      const userInvalidPass = {
+        username: testUser.username,
+        password: 'incorrect',
+      }
       return supertest(app)
         .post('/api/auth/token')
         .send(userInvalidPass)
@@ -93,12 +91,7 @@ describe('Auth Endpoints', function () {
    * @description Refresh token
    **/
   describe(`PATCH /api/auth/token`, () => {
-    beforeEach('insert users', () =>
-      helpers.seedUsers(
-        db,
-        testUsers,
-      )
-    )
+    beforeEach('insert users', () => helpers.seedUsers(db, testUsers))
 
     it(`responds 200 and JWT auth token using secret`, () => {
       const expectedToken = jwt.sign(

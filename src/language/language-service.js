@@ -145,7 +145,12 @@ const LanguageService = {
       promises.push(LanguageService.updateWord(db, currNode.value.id, wordData))
       currNode = currNode.next
     }
-    promises.push(LanguageService.updateWord(db, currNode.value.id, {...currNode.value, next: null}))
+    promises.push(
+      LanguageService.updateWord(db, currNode.value.id, {
+        ...currNode.value,
+        next: null,
+      })
+    )
     Promise.all(promises)
       .then()
       .catch(e => {

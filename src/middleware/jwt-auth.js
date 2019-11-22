@@ -16,11 +16,10 @@ async function requireAuth(req, res, next) {
 
     const user = await AuthService.getUserWithUserName(
       req.app.get('db'),
-      payload.sub,
+      payload.sub
     )
 
-    if (!user)
-      return res.status(401).json({ error: 'Unauthorized request' })
+    if (!user) return res.status(401).json({ error: 'Unauthorized request' })
 
     req.user = user
     next()

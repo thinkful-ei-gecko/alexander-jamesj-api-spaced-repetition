@@ -49,8 +49,7 @@ class LinkedList {
 
 class _Node {
   constructor(value = null, next = null) {
-    this.value = value,
-    this.next = next
+    ;(this.value = value), (this.next = next)
   }
 }
 
