@@ -1,5 +1,4 @@
 ## Syntrack Authors
-- Thomas Hudspith-Tatham (@tomatau)
 - James Jenkins (@jamesjenkinsjr)
 - Alexander Fukui (@psychicbologna)
 
