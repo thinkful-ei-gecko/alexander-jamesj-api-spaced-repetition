@@ -99,7 +99,7 @@ const LanguageService = {
     // shift the list to next question
     wordList.head = wordList.head.next
     // if the answer was correct
-    if (nextQ.translation === guess) {
+    if (nextQ.translation.toLowerCase() === guess.toLowerCase()) {
       // double the value of memory
       nextQ.memory_value = nextQ.memory_value * 2
       nextQ.correct_count++
@@ -128,7 +128,7 @@ const LanguageService = {
       wordCorrectCount: wordList.head.value.correct_count,
       wordIncorrectCount: wordList.head.value.incorrect_count,
       answer: nextQ.translation,
-      isCorrect: nextQ.translation === guess,
+      isCorrect: nextQ.translation.toLowerCase() === guess.toLowerCase(),
       nextWordID: wordList.head.value.id,
     }
   },
